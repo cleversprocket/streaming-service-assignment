@@ -25,6 +25,12 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Adding more seasons
+## Concept
 
-To add more seasons, update the array in `src/data/shows.ts` with the show name, then add 5 episode images to `public/assets/series/<show-name>/seasons/<season-number>` (the show images are repeated to make life easier 😎)
+This is a fully functioning dynamic website built for speed. The pages are static so they can be cached on the edge. The cache can be easily busted by calling the `/api/revalidate?path=</series/show-name>` api with the page's path when the show adds more episodes or needs to be updated for a different reason. This could easily be called in a webhook if the page was managed by a CMS, or in a serverless cloud function for example.
+
+**The /revalidate endpoint is secure so make sure to add the `REVALIDATE_TOKEN` to .env.local otherwise the operation will fail**
+
+## Adding more shows
+
+To add more shows, update the array in `src/data/shows.ts` with the show name, then add 5 episode images to `public/assets/series/<show-name>/seasons/<season-number>` (the show images are repeated to make life easier 😎)

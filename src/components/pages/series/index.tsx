@@ -16,6 +16,10 @@ export type Props = {
   };
 };
 
+const EPISODE_TRAY_CLASSES = {
+  li: "w-[201px]",
+};
+
 export default function SeriesPage({
   data,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
@@ -35,18 +39,18 @@ export default function SeriesPage({
   }, []);
 
   return (
-    <main className="overflow-hidden relative lg:grid lg:[grid-template-columns:64%_36%]">
-      <section className="[height:100vh] flex flex-col justify-around">
-        <header className="relative z-10 text-white p-6">
+    <main className="overflow-hidden relative xl:grid xl:[grid-template-columns:64%_36%]">
+      <section className="relative [height:100vh] flex flex-col justify-around xl:grid xl:[grid-template-rows:66%_1fr] xl:[grid-template-columns:1fr] xl:pl-20">
+        <header className="relative z-10 text-white p-6 xl:self-center">
           <hgroup className="flex flex-col">
-            <h1 className="font-bold [font-size:74px] [line-height:87px]">
+            <h1 className="font-bold text-3xl md:[font-size:74px] md:[line-height:87px]">
               {title}
             </h1>
-            <p className="order-first [font-size:23px] [line-height:27px] font-light">
+            <p className="order-first md:[font-size:23px] md:[line-height:27px] font-light">
               Season 1
             </p>
           </hgroup>
-          <p className="font-light [font-size:23px] [line-height:27px]">
+          <p className="font-light md:[font-size:23px] md:[line-height:27px] w-full max-w-[491px]">
             {description}
           </p>
         </header>
@@ -58,6 +62,7 @@ export default function SeriesPage({
           alt={seasonOne.image.alt}
         />
         <EpisodeTray
+          classes={EPISODE_TRAY_CLASSES}
           selectedIndex={selectedEpisodeIndex}
           isOpen={isDrawerOpen}
           controls="episode-drawer"
@@ -70,14 +75,16 @@ export default function SeriesPage({
         id="episode-drawer"
         aria-live="polite"
         className={classNames(
-          "absolute z-20 inset-0 w-[100vw] h-[100vh] lg:transform-none duration-300",
+          "absolute z-20 inset-0 w-[100vw] h-[100vh] lg:w-1/2 xl:transform-none xl:relative xl:w-full duration-300 xl:visible",
           {
-            "translate-x-0 ease-in-out lg:transform-none": isDrawerOpen,
-            "translate-x-full ease-out lg:transform-none": !isDrawerOpen,
+            "translate-x-0 lg:translate-x-full ease-in-out xl:transform-none":
+              isDrawerOpen,
+            "invisible translate-x-full lg:translate-x-[200%] ease-out xl:transform-none lg:right-0":
+              !isDrawerOpen,
           }
         )}
       >
-        <header className="absolute top-6 left-6 z-50">
+        <header className="absolute top-6 left-6 z-50 xl:hidden">
           <button
             className="font-bold text-white "
             type="button"
@@ -94,11 +101,11 @@ export default function SeriesPage({
         <div
           ref={drawerRef}
           className={classNames(
-            "[height:100vh] w-full fixed flex flex-col justify-end lg:static inset-0 bg-white z-30 overflow-scroll"
+            "[height:100vh] w-full fixed flex flex-col justify-end xl:static inset-0 bg-white z-30 overflow-scroll"
           )}
         >
           <Image
-            className="object-cover w-full h-2/3 absolute inset-0 z-0"
+            className="object-cover w-full h-2/3"
             src={selectedEpisode.image.src}
             width={300}
             height={300}
@@ -113,7 +120,7 @@ export default function SeriesPage({
                 </time>
               </h2>
               <Image
-                className="mr-4"
+                className="mr-4 block"
                 src="/assets/images/star-rating.svg"
                 width={28}
                 height={28}
@@ -195,7 +202,8 @@ export const getStaticProps: GetStaticProps<Props, Params> = async (
         return {
           title: `${showData.Title} episode ${episodeIndex + 1}`,
           description: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum? Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum? Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum?`,
-          rating: (Math.random() * 10).toFixed(1),
+          // Only the best shows on my streaming service!
+          rating: (9 + Math.random()).toFixed(1),
           date: formattedDate,
           image: {
             src: `/assets/series/${matchedShow.name}/seasons/${season}/${episodeImage}.jpg`,
