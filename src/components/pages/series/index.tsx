@@ -6,9 +6,9 @@ import type {
   InferGetStaticPropsType,
 } from "next";
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { EpisodeTray } from "./sub-components/episode-tray";
-import { CSSTransition } from "react-transition-group";
+import classNames from "classnames";
 
 export type Props = {
   data: Show & {
@@ -36,7 +36,7 @@ export default function SeriesPage({
 
   return (
     <main className="overflow-hidden relative lg:grid lg:[grid-template-columns:64%_36%]">
-      <section className="[height:100vh] relative flex flex-col justify-around">
+      <section className="[height:100vh] flex flex-col justify-around">
         <header className="relative z-10 text-white p-6">
           <hgroup className="flex flex-col">
             <h1 className="font-bold [font-size:74px] [line-height:87px]">
@@ -58,66 +58,78 @@ export default function SeriesPage({
           alt={seasonOne.image.alt}
         />
         <EpisodeTray
+          selectedIndex={selectedEpisodeIndex}
+          isOpen={isDrawerOpen}
+          controls="episode-drawer"
           className="overflow-x-scroll pl-6"
           handleClick={handleEpisodeClick}
           episodes={seasonOne.episodes}
         />
       </section>
-      <CSSTransition
-        in={isDrawerOpen}
-        timeout={200}
-        nodeRef={drawerRef}
-        classNames={{
-          enter: "translate-x-0 ease-in-out lg:transform-none",
-          enterActive: "translate-x-0 ease-in-out lg:transform-none",
-          enterDone: "translate-x-0 lg:transform-none",
-          exit: "translate-x-full ease-out lg:transform-none",
-          exitActive: "translate-x-full ease-out lg:transform-none",
-          exitDone: "translate-x-full lg:transform-none",
-        }}
+      <article
+        id="episode-drawer"
+        aria-live="polite"
+        className={classNames(
+          "absolute z-20 inset-0 w-[100vw] h-[100vh] lg:transform-none duration-300",
+          {
+            "translate-x-0 ease-in-out lg:transform-none": isDrawerOpen,
+            "translate-x-full ease-out lg:transform-none": !isDrawerOpen,
+          }
+        )}
       >
-        <article
+        <header className="absolute top-6 left-6 z-50">
+          <button
+            className="font-bold text-white "
+            type="button"
+            onClick={() => {
+              setIsDrawerOpen(false);
+              setTimeout(() => {
+                (drawerRef.current as HTMLDivElement).scrollTop = 0;
+              }, 300);
+            }}
+          >
+            close
+          </button>
+        </header>
+        <div
           ref={drawerRef}
-          className="[height:100vh] w-full absolute lg:static inset-0 bg-white z-30 translate-x-full lg:transform-none duration-300"
+          className={classNames(
+            "[height:100vh] w-full fixed flex flex-col justify-end lg:static inset-0 bg-white z-30 overflow-scroll"
+          )}
         >
-          <header>
-            <button
-              className="font-bold"
-              type="button"
-              onClick={() => {
-                setIsDrawerOpen(false);
-              }}
-            >
-              close
-            </button>
-            <h2>
-              {`Episode ${selectedEpisode.number} — `}
-              <time dateTime={selectedEpisode.date}>
-                {selectedEpisode.date}
-              </time>
-            </h2>
-            <div>
+          <Image
+            className="object-cover w-full h-2/3 absolute inset-0 z-0"
+            src={selectedEpisode.image.src}
+            width={300}
+            height={300}
+            alt={selectedEpisode.image.alt}
+          />
+          <div className="h-1/3 bg-white">
+            <div className="flex items-center pt-[50px] pb-[42px] px-[38px] border-b-2">
+              <h2 className="mr-auto">
+                {`Episode ${selectedEpisode.number} — `}
+                <time dateTime={selectedEpisode.date}>
+                  {selectedEpisode.date}
+                </time>
+              </h2>
               <Image
+                className="mr-4"
                 src="/assets/images/star-rating.svg"
-                width={300}
-                height={300}
+                width={28}
+                height={28}
                 alt="star rating"
               />
               <p aria-label={`${selectedEpisode.rating} out of 10 stars`}>
                 <b>{selectedEpisode.rating}</b>/10
               </p>
             </div>
-          </header>
-          <Image
-            src={selectedEpisode.image.src}
-            width={300}
-            height={300}
-            alt={selectedEpisode.image.alt}
-          />
-          <h1>{selectedEpisode.title}</h1>
-          <p>{selectedEpisode.description}</p>
-        </article>
-      </CSSTransition>
+            <h1 className="px-[38px] mt-[45px] mb-1.5 font-bold text-[27px] leading-[32px]">
+              {selectedEpisode.title}
+            </h1>
+            <p className="px-[38px] pb-6">{selectedEpisode.description}</p>
+          </div>
+        </div>
+      </article>
     </main>
   );
 }

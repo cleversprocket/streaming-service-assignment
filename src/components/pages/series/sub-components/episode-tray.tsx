@@ -6,6 +6,9 @@ import { FC } from "react";
 type Props = {
   episodes: Episodes;
   handleClick: (index: number) => void;
+  controls: string;
+  selectedIndex: number;
+  isOpen: boolean;
   className?: string;
 };
 
@@ -13,6 +16,9 @@ export const EpisodeTray: FC<Props> = ({
   episodes,
   handleClick,
   className,
+  controls,
+  selectedIndex,
+  isOpen,
 }) => {
   return (
     <div className={classNames(className, "flex")}>
@@ -31,8 +37,9 @@ export const EpisodeTray: FC<Props> = ({
               )}
             >
               <button
+                aria-controls={controls}
                 type="button"
-                className="flex flex-col text-white"
+                className={classNames("group flex flex-col text-white")}
                 onClick={() => {
                   handleClick(i);
                 }}
@@ -44,7 +51,12 @@ export const EpisodeTray: FC<Props> = ({
                   {episode.description}
                 </p>
                 <Image
-                  className="order-first object-cover w-full h-[134px]"
+                  className={classNames(
+                    "order-first object-cover w-full h-[134px] brightness-50 group-hover:brightness-100",
+                    {
+                      "brightness-100": i === selectedIndex && isOpen,
+                    }
+                  )}
                   src={episode.image.src}
                   width={633}
                   height={330}
